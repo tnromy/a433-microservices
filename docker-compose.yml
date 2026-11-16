@@ -1,0 +1,30 @@
+# Docker Compose untuk deploy aplikasi Item App
+version: "2"
+
+services:
+  # Service untuk aplikasi web (Node.js + Express)
+  item-app:
+    # Gunakan image dari GitHub Packages (GHCR)
+    image: ghcr.io/tnromy/item-app:v1
+    # Mapping port: akses dari port 80 di host ke port 8080 di container
+    ports:
+      - "80:8080"
+    # Pastikan item-app berjalan setelah item-db diluncurkan
+    depends_on:
+      - item-db
+    # Restart otomatis jika container terhenti
+    restart: always
+
+  # Service untuk database (MongoDB)
+  item-db:
+    # Gunakan image MongoDB versi 3
+    image: mongo:3
+    # Volume untuk persistensi data database
+    volumes:
+      - app-db:/data/db
+    # Restart otomatis jika container terhenti
+    restart: always
+
+# Definisikan volume untuk penyimpanan data
+volumes:
+  app-db:
