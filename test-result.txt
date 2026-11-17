@@ -1,0 +1,39 @@
+$ kubectl get pods,svc -n ecommerce
+NAME                                    READY   STATUS    RESTARTS   AGE
+pod/order-service-5b49ddfbbd-vz2c7      2/2     Running   0          50s
+pod/rabbitmq-0                          2/2     Running   0          81s
+pod/shipping-service-7b87c69558-b56rh   2/2     Running   0          50s
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)              AGE
+service/order-service      ClusterIP   10.111.124.149   <none>        3000/TCP             50s
+service/rabbitmq           ClusterIP   10.102.68.155    <none>        5672/TCP,15672/TCP   82s
+service/shipping-service   ClusterIP   10.109.120.31    <none>        3001/TCP             50s
+
+$ kubectl get gateway,virtualservice -n ecommerce
+NAME                                            AGE
+gateway.networking.istio.io/ecommerce-gateway   22s
+
+NAME                                           GATEWAYS                HOSTS   AGE
+virtualservice.networking.istio.io/ecommerce   ["ecommerce-gateway"]   ["*"]   22s
+
+$ kubectl get svc istio-ingressgateway -n istio-system
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                                      AGE
+istio-ingressgateway   LoadBalancer   10.104.193.150   <pending>     15021:31240/TCP,80:32635/TCP,443:31719/TCP   3m43s
+
+$ curl -X POST http://$(minikube ip):32635/order -H 'Content-Type: application/json' -d '{"order": {...}}'
+{"book_name":"Harry Potter","author":"J.K Rowling","buyer":"Fikri Helmi Setiawan","shipping_address":"Jl. Batik Kumeli no 50 Bandung"}
+
+$ kubectl logs deploy/order-service -c order-service -n ecommerce
+Server running at 3000
+Connected to the queue!
+Order succesfully created!
+Order succesfully created!
+
+$ kubectl logs deploy/shipping-service -c shipping-service -n ecommerce
+Server running at 3001
+Order received: {"book_name":"Harry Potter","author":"J.K Rowling","buyer":"Fikri Helmi Setiawan","shipping_address":"Jl. Batik Kumeli no 50 Bandung"}
+** Will be shipped soon! **
+
+Order received: {"book_name":"Harry Potter","author":"J.K Rowling","buyer":"Fikri Helmi Setiawan","shipping_address":"Jl. Batik Kumeli no 50 Bandung"}
+** Will be shipped soon! **
+

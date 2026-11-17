@@ -1,0 +1,21 @@
+# Service untuk mengakses order-service di dalam cluster
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service order-service
+  name: order-service
+  # Namespace aplikasi
+  namespace: ecommerce
+  labels:
+    app: order-service
+spec:
+  # Pilih Pod order-service berdasarkan label
+  selector:
+    app: order-service
+  ports:
+    # Prefix "http" memberi tahu Istio bahwa trafik ini menggunakan protokol HTTP
+    - name: http
+      # Port Service
+      port: 3000
+      # Port container aplikasi
+      targetPort: 3000

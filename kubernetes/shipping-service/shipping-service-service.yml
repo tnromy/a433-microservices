@@ -1,0 +1,21 @@
+# Service untuk mengakses shipping-service di dalam cluster
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service shipping-service
+  name: shipping-service
+  # Namespace aplikasi
+  namespace: ecommerce
+  labels:
+    app: shipping-service
+spec:
+  # Pilih Pod shipping-service berdasarkan label
+  selector:
+    app: shipping-service
+  ports:
+    # Prefix "http" memberi tahu Istio bahwa trafik ini menggunakan protokol HTTP
+    - name: http
+      # Port Service
+      port: 3001
+      # Port container aplikasi
+      targetPort: 3001

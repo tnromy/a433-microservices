@@ -1,0 +1,63 @@
+# Deployment untuk order-service (menerima order via HTTP POST /order lalu mengirimnya ke RabbitMQ)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Nama Deployment
+  name: order-service
+  # Namespace aplikasi (sidecar Istio diinjeksi otomatis)
+  namespace: ecommerce
+  labels:
+    app: order-service
+spec:
+  # Jumlah Pod yang dijalankan
+  replicas: 1
+  # Pilih Pod yang dikelola berdasarkan label
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+        # Label version dipakai Istio/Kiali untuk mengenali versi service
+        version: v1
+    spec:
+      # Init container: tunggu RabbitMQ siap sebelum aplikasi dijalankan
+      initContainers:
+        - name: wait-for-rabbitmq
+          # Image kecil yang memiliki perintah nc (netcat)
+          image: busybox:1.36
+          # Ulangi pengecekan port AMQP RabbitMQ sampai berhasil terhubung
+          command: ["sh", "-c", "until nc -z rabbitmq 5672; do echo menunggu RabbitMQ; sleep 3; done"]
+          securityContext:
+            # UID 1337 dikecualikan dari redirect iptables Istio, karena sidecar belum berjalan saat init container
+            runAsUser: 1337
+      containers:
+        - name: order-service
+          # Image order-service dari GitHub Packages (GHCR)
+          image: ghcr.io/tnromy/order-service:latest
+          # Selalu tarik image terbaru dari registry
+          imagePullPolicy: Always
+          ports:
+            # Port HTTP aplikasi
+            - name: http
+              containerPort: 3000
+          env:
+            # Port aplikasi (sesuai .env)
+            - name: PORT
+              value: "3000"
+            # Username RabbitMQ diambil dari Secret
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: RABBITMQ_USER
+            # Password RabbitMQ diambil dari Secret
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: RABBITMQ_PASS
+            # URL RabbitMQ disusun dari Secret dan nama Service RabbitMQ
+            - name: AMQP_URL
+              value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASS)@rabbitmq:5672"

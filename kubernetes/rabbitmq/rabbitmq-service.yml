@@ -1,0 +1,23 @@
+# Service untuk mengakses RabbitMQ dari dalam cluster
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service; dipakai sebagai host pada AMQP_URL (amqp://...@rabbitmq:5672)
+  name: rabbitmq
+  # Namespace aplikasi
+  namespace: ecommerce
+  labels:
+    app: rabbitmq
+spec:
+  # Pilih Pod RabbitMQ berdasarkan label
+  selector:
+    app: rabbitmq
+  ports:
+    # Port protokol AMQP; prefix "tcp-" memberi tahu Istio bahwa ini trafik TCP
+    - name: tcp-amqp
+      port: 5672
+      targetPort: 5672
+    # Port RabbitMQ Management UI (HTTP)
+    - name: http-management
+      port: 15672
+      targetPort: 15672

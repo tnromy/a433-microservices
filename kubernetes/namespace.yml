@@ -1,0 +1,9 @@
+# Namespace khusus untuk aplikasi E-Commerce App
+apiVersion: v1
+kind: Namespace
+metadata:
+  # Nama namespace tempat semua object aplikasi di-deploy
+  name: ecommerce
+  labels:
+    # Aktifkan injeksi otomatis Istio sidecar (Envoy proxy) untuk setiap Pod di namespace ini
+    istio-injection: enabled
