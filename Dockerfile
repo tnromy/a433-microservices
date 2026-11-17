@@ -1,6 +1,9 @@
 # Gunakan base image Node.js versi 14
 FROM node:14
 
+# Hubungkan image dengan repository GitHub agar muncul di halaman Packages repository
+LABEL org.opencontainers.image.source=https://github.com/tnromy/a433-microservices
+
 # Tentukan working directory di dalam container
 WORKDIR /app
 
