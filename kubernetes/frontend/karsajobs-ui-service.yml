@@ -1,0 +1,22 @@
+# Service untuk mengekspos frontend Karsa Jobs ke luar cluster
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service frontend
+  name: karsajobs-ui-service
+  labels:
+    app: karsajobs-ui
+spec:
+  # NodePort: dapat diakses via browser di <Node IP>:<Node Port>
+  type: NodePort
+  # Teruskan trafik ke Pod dengan label app=karsajobs-ui
+  selector:
+    app: karsajobs-ui
+  ports:
+    - name: http
+      # Port Service di dalam cluster
+      port: 8000
+      # Port container frontend
+      targetPort: 8000
+      # Custom Node Port untuk mengakses frontend
+      nodePort: 30000

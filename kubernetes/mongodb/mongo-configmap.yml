@@ -1,0 +1,14 @@
+# ConfigMap berisi berkas konfigurasi MongoDB (mongo.conf)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # Nama ConfigMap yang di-mount ke container MongoDB pada path /config
+  name: mongo-config
+  labels:
+    app: mongo
+data:
+  # Data diperlakukan sebagai berkas mongo.conf
+  mongo.conf: |
+    storage:
+      # Lokasi penyimpanan data MongoDB (di-mount ke Persistent Volume)
+      dbPath: /data/db

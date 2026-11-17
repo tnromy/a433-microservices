@@ -1,0 +1,19 @@
+# Helm values untuk chart prometheus-community/prometheus (namespace: monitoring)
+# Install: helm install prometheus prometheus-community/prometheus -n monitoring --create-namespace -f prometheus-values.yml
+
+# Alertmanager dan Pushgateway tidak dibutuhkan untuk proyek ini, dimatikan agar hemat resource
+alertmanager:
+  enabled: false
+prometheus-pushgateway:
+  enabled: false
+
+server:
+  # Ekspos Prometheus server lewat NodePort agar bisa dibuka dari browser
+  service:
+    type: NodePort
+    nodePort: 30090
+  # Simpan data metrics selama 2 hari saja
+  retention: 2d
+  # Ukuran volume penyimpanan data metrics
+  persistentVolume:
+    size: 2Gi

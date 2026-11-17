@@ -1,0 +1,22 @@
+# Service untuk mengekspos backend Karsa Jobs ke luar cluster
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service backend
+  name: karsajobs-service
+  labels:
+    app: karsajobs
+spec:
+  # NodePort: dapat diakses via <Node IP>:<Node Port>
+  type: NodePort
+  # Teruskan trafik ke Pod dengan label app=karsajobs
+  selector:
+    app: karsajobs
+  ports:
+    - name: http
+      # Port Service di dalam cluster
+      port: 8080
+      # Port container backend
+      targetPort: 8080
+      # Custom Node Port; dipakai VUE_APP_BACKEND pada frontend
+      nodePort: 30080

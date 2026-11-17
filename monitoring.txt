@@ -1,0 +1,25 @@
+NAME                                                 READY   STATUS    RESTARTS   AGE
+pod/grafana-5f847f788d-g7nd5                         1/1     Running   0          72s
+pod/prometheus-kube-state-metrics-67df8f584c-zqwfp   1/1     Running   0          7m58s
+pod/prometheus-prometheus-node-exporter-lr826        1/1     Running   0          7m58s
+pod/prometheus-server-6fbdf7b7c6-fbtxq               2/2     Running   0          7m58s
+
+NAME                                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/grafana                               NodePort    10.102.176.124   <none>        80:30300/TCP   6m56s
+service/prometheus-kube-state-metrics         ClusterIP   10.105.16.167    <none>        8080/TCP       7m58s
+service/prometheus-prometheus-node-exporter   ClusterIP   10.102.59.84     <none>        9100/TCP       7m58s
+service/prometheus-server                     NodePort    10.111.169.179   <none>        80:30090/TCP   7m58s
+
+NAME                                                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+daemonset.apps/prometheus-prometheus-node-exporter   1         1         1       1            1           kubernetes.io/os=linux   7m58s
+
+NAME                                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/grafana                         1/1     1            1           6m56s
+deployment.apps/prometheus-kube-state-metrics   1/1     1            1           7m58s
+deployment.apps/prometheus-server               1/1     1            1           7m58s
+
+NAME                                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/grafana-5f847f788d                         1         1         1       72s
+replicaset.apps/grafana-75bd8dcf5b                         0         0         0       6m56s
+replicaset.apps/prometheus-kube-state-metrics-67df8f584c   1         1         1       7m58s
+replicaset.apps/prometheus-server-6fbdf7b7c6               1         1         1       7m58s

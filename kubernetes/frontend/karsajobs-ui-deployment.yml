@@ -1,0 +1,29 @@
+# Deployment untuk frontend Karsa Jobs (Vue.js)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Nama Deployment frontend
+  name: karsajobs-ui
+  labels:
+    app: karsajobs-ui
+spec:
+  # Jumlah Pod frontend yang dijalankan
+  replicas: 1
+  # Pilih Pod yang dikelola berdasarkan label
+  selector:
+    matchLabels:
+      app: karsajobs-ui
+  template:
+    metadata:
+      labels:
+        app: karsajobs-ui
+    spec:
+      containers:
+        - name: karsajobs-ui
+          # Image frontend dari GitHub Packages (GHCR)
+          image: ghcr.io/tnromy/karsajobs-ui:latest
+          # Selalu tarik image terbaru dari registry
+          imagePullPolicy: Always
+          ports:
+            # Port aplikasi frontend (vue-cli-service serve --port 8000)
+            - containerPort: 8000

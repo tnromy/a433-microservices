@@ -1,0 +1,62 @@
+# StatefulSet untuk menjalankan database MongoDB (aplikasi stateful)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  # Nama StatefulSet MongoDB
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  # Service (headless) yang mengatur identitas jaringan Pod StatefulSet
+  serviceName: mongo-service
+  # Jumlah replika MongoDB
+  replicas: 1
+  # Pilih Pod yang dikelola berdasarkan label
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          # Image resmi MongoDB
+          image: mongo:4.4
+          # Jalankan mongod dengan berkas konfigurasi dari ConfigMap
+          args: ["--config", "/config/mongo.conf"]
+          ports:
+            # Port yang diekspos oleh MongoDB
+            - containerPort: 27017
+          env:
+            # Username root dibaca dari berkas Secret yang di-mount
+            - name: MONGO_INITDB_ROOT_USERNAME_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+            # Password root dibaca dari berkas Secret yang di-mount
+            - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+          volumeMounts:
+            # Persistent Volume untuk menyimpan data MongoDB
+            - name: mongo-data
+              mountPath: /data/db
+            # ConfigMap berisi mongo.conf
+            - name: mongo-config
+              mountPath: /config
+            # Secret berisi kredensial root MongoDB
+            - name: mongo-credentials
+              mountPath: /etc/mongo-credentials
+              readOnly: true
+      volumes:
+        # Volume dari PersistentVolumeClaim
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: mongo-pvc
+        # Volume dari ConfigMap
+        - name: mongo-config
+          configMap:
+            name: mongo-config
+        # Volume dari Secret
+        - name: mongo-credentials
+          secret:
+            secretName: mongo-secret

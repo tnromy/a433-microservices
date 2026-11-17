@@ -1,0 +1,48 @@
+# Helm values untuk chart grafana/grafana (namespace: monitoring)
+# Install: helm install grafana grafana/grafana -n monitoring -f grafana-values.yml \
+#            --set-file dashboards.default.karsajobs-monitoring.json=dashboards/karsajobs-dashboard.json
+
+# Ekspos Grafana lewat NodePort agar bisa dibuka dari browser
+service:
+  type: NodePort
+  nodePort: 30300
+
+# Data source Prometheus yang otomatis didaftarkan saat Grafana berjalan
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        # Alamat Service Prometheus server di dalam namespace monitoring
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
+
+# Provider dashboard: tempat Grafana memuat dashboard dari berkas
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+# Dashboard yang diimpor otomatis dari grafana.com
+dashboards:
+  default:
+    kubernetes-cluster:
+      # Kubernetes cluster monitoring (via Prometheus)
+      gnetId: 315
+      revision: 3
+      datasource: Prometheus
+    # Dashboard khusus Karsa Jobs (CPU, memori, network, dan jumlah Pod).
+    # Isi JSON diberikan saat install/upgrade:
+    #   --set-file dashboards.default.karsajobs-monitoring.json=dashboards/karsajobs-dashboard.json
+    karsajobs-monitoring:
+      json: ""

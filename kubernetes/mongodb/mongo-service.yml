@@ -1,0 +1,19 @@
+# Service untuk MongoDB (headless) yang menjadi governing service StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service; dipakai backend sebagai MONGO_HOST
+  name: mongo-service
+  labels:
+    app: mongo
+spec:
+  # Headless Service: tanpa ClusterIP, DNS langsung mengarah ke Pod MongoDB
+  clusterIP: None
+  # Pilih Pod dengan label app=mongo
+  selector:
+    app: mongo
+  ports:
+    # Port default MongoDB
+    - name: mongo
+      port: 27017
+      targetPort: 27017

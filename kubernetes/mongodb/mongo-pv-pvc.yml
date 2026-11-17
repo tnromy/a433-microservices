@@ -1,0 +1,41 @@
+# PersistentVolume: penyimpanan fisik untuk data MongoDB di node minikube
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  # Nama PersistentVolume
+  name: mongo-pv
+  labels:
+    app: mongo
+spec:
+  # Kelas storage manual agar PV ini hanya dipasangkan dengan PVC di bawah
+  storageClassName: manual
+  # Kapasitas penyimpanan yang disediakan
+  capacity:
+    storage: 1Gi
+  # Volume hanya bisa di-mount read-write oleh satu node
+  accessModes:
+    - ReadWriteOnce
+  # Data tetap dipertahankan walaupun PVC dihapus
+  persistentVolumeReclaimPolicy: Retain
+  # Gunakan direktori pada node minikube sebagai penyimpanan
+  hostPath:
+    path: /data/mongo
+---
+# PersistentVolumeClaim: permintaan penyimpanan yang dipakai oleh StatefulSet MongoDB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  # Nama PVC yang dirujuk oleh StatefulSet MongoDB
+  name: mongo-pvc
+  labels:
+    app: mongo
+spec:
+  # Harus sama dengan storageClassName pada PV agar saling terikat
+  storageClassName: manual
+  # Mode akses yang diminta
+  accessModes:
+    - ReadWriteOnce
+  # Besar penyimpanan yang diminta
+  resources:
+    requests:
+      storage: 1Gi

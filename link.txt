@@ -1,0 +1,2 @@
+https://github.com/tnromy/a433-microservices/pkgs/container/karsajobs
+https://github.com/tnromy/a433-microservices/pkgs/container/karsajobs-ui
