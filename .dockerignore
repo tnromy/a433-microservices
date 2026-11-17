@@ -1,0 +1,4 @@
+# Jangan salin node_modules lokal ke dalam image (dependency diinstal ulang di dalam container)
+node_modules
+# Jangan salin metadata Git ke dalam image
+.git
